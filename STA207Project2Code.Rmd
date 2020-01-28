@@ -1,0 +1,19 @@
+---
+title: "STA207 Project2 Code"
+author: "Yahui Li"
+date: "2020/1/28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+1.  Explore math scaled scores in the 1st with teachers as the unit. Generate summary statistics (in forms of tables or plots) that you find informative, and explain them. 
+
+```{r}
+#install.packages("AER")
+library(AER)
+data("STAR")
+```
