@@ -2,18 +2,51 @@
 title: "STA207 Project2 Code"
 author: "Yahui Li"
 date: "2020/1/28"
-output: html_document
+output: 
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
+```{r,message=FALSE}
+library(tidyverse)
+```
 
 1.  Explore math scaled scores in the 1st with teachers as the unit. Generate summary statistics (in forms of tables or plots) that you find informative, and explain them. 
 
 ```{r}
-#install.packages("AER")
-library(AER)
-data("STAR")
+# https://dataverse.harvard.edu/file.xhtml?fileId=666716&version=1.0
+load("~/myrepo/STA207Project2/STAR_Students.RData")
+data <- data.frame(g1classtype = x$g1classtype, g1schid = x$g1schid, 
+                   g1tchid = x$g1tchid, g1tmathss = x$g1tmathss)
 ```
+
+Use no.omit() to remove all NA in dataset
+
+```{r}
+data <- na.omit(data)
+```
+
+Test the type of each varaible.
+
+```{r}
+sapply(data, class)
+#We should change ID variables as factor.
+data$g1schid <- factor(data$g1schid)
+data$g1tchid <- factor(data$g1tchid)
+```
+
+
+```{r}
+(data_summary <- data %>%
+  group_by(g1tchid) %>%
+  summarize(mean = mean(g1tmathss), sd = sd(g1tmathss), median = median(g1tmathss),
+            min = min(g1tmathss),max = max(g1tmathss)))
+hist(data_summary$mean, main =title("Histogram of mean math score by different teachers"))
+```
+
+From the histogram the mean score by different teacher is normal-like. 
+
+2.  Write down a two-way ANOVA model to study the effects of class types on math scaled scores in 1st grade, with the school indicator as the other factor. Explain your notation.
