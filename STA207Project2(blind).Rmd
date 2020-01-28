@@ -1,0 +1,82 @@
+---
+title: 'Project 2: Project STAR II'
+output:
+  html_document:
+    number_sections: yes
+  pdf_document: default
+date: "01/31/2020"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Introduction
+
+This Document is the first project of Group 7 in STA 207, Winter Quarter 2020.
+
+The repository in Github is on https://github.com/yhli097/STA207-Project1-yhli097.git
+
+There is also information in code like graph. Try PDF file if html file displays incompetely.
+
+## Background
+
+Tennesses Student/Teacher Achievement Ratio study (Project STAR) was conducted in the late 1980s to evaluate the effect of class size on test scores. The study randomly assigned students to small classes, regular classes, and regular classes with a teacher’s aide. In order to randomize properly, schools were enrolled only if they had enough studybody to have at least one class of each type. Once the schools were enrolled, students were randomly assigned to the three types of classes, and one teacher was randomly assigned to one class.
+
+## Data Description
+
+The `STAR` dataset from the `AER` package which are from the very influential randomized experient STAR, assessing the effect of reducing class size on test scores in the early grades. The dataset contains scaled scores for math and reading from kindergarten to 3rd grade. We will only examine the math scores in 1st grade in this project[1].
+
+
+The following is the description of `STAR`[2].
+
+STAR is a data frame containing 11,598 observations on 47 variables.
+
+Here are main variables for 1st grade.
+
+
+|     Variable      |                                 Description                |
+| ---------|:--------------------------------------------------------------------------:|
+| `gender`     | factor indicating student's gender. |
+| `ethnicity`      | factor indicating student's ethnicity with levels `cauc` (Caucasian), `afam` (African-American), `asian` (Asian), `hispanic` (Hispanic), `amindian` (American-Indian) or `other`. |
+| `birth` | student's birth quarter (of class yearqtr). |
+| `star1` | factor indicating the STAR class type in 1st grade: `regular`, `small`, or `regular-with-aide`. `NA` indicates that no STAR class was attended. |
+| `read1` | total reading scaled score in 1st grade. |
+| `math1` | total math scaled score in 1st grade. |
+| `lunch1` | factor indicating whether the student qualified for free lunch in 1st grade.|
+| `school1` | factor indicating school type in 1st grade: `inner-city`, `suburban`, `rural` or `urban`. |
+
+
+
+
+## Question of Interest
+
+Our questions have three parts:
+
+a. How to build a one-way ANOVA model to study the effects of class types on the math scaled scores in 1st grade? Is this model appropriate? How does the model fit the data?
+
+b. Is there any difference in the math scaled score in 1st grade across students in different class types?
+
+c. Can we make any causal statements based on the analysis?
+
+
+# Data analysis
+
+# Result
+
+# Discussion
+
+# References
+
+[1] https://chenshizhe.github.io/STA207W2020/ch-proj.html#project-1-project-star-i
+
+[2] https://cran.r-project.org/web/packages/AER/AER.pdf
+
+[3] https://en.wikipedia.org/wiki/Bartlett%27s_test
+
+[4] https://en.wikipedia.org/wiki/Levene%27s_test
+
+[5] https://en.m.wikipedia.org/wiki/Behrens%E2%80%93Fisher_problem
+
