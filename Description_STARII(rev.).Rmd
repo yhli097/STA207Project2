@@ -1,0 +1,36 @@
+---
+title: "Project 2: Project STAR"
+date: "January 5th 2020"
+output: html_document
+---
+
+## Overview
+
+This document contains instructions on Project 1 for STA 207 in Winter 2020. This document is made with `R markdown`. The `rmd` file to generate this document is available on the course website. 
+
+## Background
+
+We will continue our study on Project STAR. In the previous project, we examine the effects on individual students. Here we consider each teacher as the individual unit. Moreover, we will also explore the longitudinal feature of this dataset and the fact that randomization happened within schools. 
+
+
+## Tasks 
+
+1.  Explore math scaled scores in the 1st with teachers as the unit. Generate summary statistics (in forms of tables or plots) that you find informative, and explain them. 
+
+2.  Write down a two-way ANOVA model to study the effects of class types on math scaled scores in 1st grade, with the school indicator as the other factor. Explain your notation. 
+
+3.  Explain why your model is appropriate for this task on this data set. You may want to include statistics and plots in your explanation. 
+
+4.  Fit the model you choose in Task 2 and show your fits in the report. 
+
+5.  Conduct model diagnostic and/or sensitivity analysis. 
+
+6.  Test whether there is a difference in math scaled score in 1st grade across teachers in different class types. Justify your choice of test. 
+
+7.  Discuss whether you are able to make any causal statements based on your analysis. 
+
+8.  Is there any difference between the results from Project 2 compared to the results from Project 1?
+
+
+In any of these tasks, if a statistical method is employed, you need to clearly state the model and justify your choice. 
+
