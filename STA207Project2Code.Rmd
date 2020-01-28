@@ -36,17 +36,58 @@ sapply(data, class)
 #We should change ID variables as factor.
 data$g1schid <- factor(data$g1schid)
 data$g1tchid <- factor(data$g1tchid)
+nlevels(data$g1schid) #there are 76 school IDs
+nlevels(data$g1tchid) #there are 339 teacher IDs
 ```
 
+We can check each teacher ID was in only one certain type of class and in only one school ID, so we can summarize the sore by different teacher ID.
 
 ```{r}
-(data_summary <- data %>%
-  group_by(g1tchid) %>%
+(data_by_teacher <- data %>%
+  group_by(g1classtype,g1schid,g1tchid) %>%
   summarize(mean = mean(g1tmathss), sd = sd(g1tmathss), median = median(g1tmathss),
             min = min(g1tmathss),max = max(g1tmathss)))
-hist(data_summary$mean, main =title("Histogram of mean math score by different teachers"))
+par(mfrow=c(2,3))
+hist(data_by_teacher$mean, xlab = c("mean of math score"), 
+     main =title("Histogram of mean math score"))
+hist(data_by_teacher$sd, xlab = c("sd of math score"), 
+     main =title("Histogram of standard deviation on math score"))
+hist(data_by_teacher$median, xlab = c("median of math score"), 
+     main =title("Histogram of median on math score"))
+hist(data_by_teacher$min, xlab = c("min of math score"), 
+     main =title("Histogram of min on math score"))
+hist(data_by_teacher$max, xlab = c("max of math score"), 
+     main =title("Histogram of max on math score"))
+hist(data_by_teacher$max-data_by_teacher$min, xlab = c("range of math score"), 
+     main =title("Histogram of range on math score"))
+par(mfrow=c(1,1))
 ```
 
-From the histogram the mean score by different teacher is normal-like. 
+From the histogram on the mean of math score by different teacher is normal-like. However, the histogram on standard deviation of math score by different teacher is thiner than normal distribution.
+
+
 
 2.  Write down a two-way ANOVA model to study the effects of class types on math scaled scores in 1st grade, with the school indicator as the other factor. Explain your notation.
+
+$$Y_{ijk} = \mu_{ij} + \epsilon_{ijk} \text{ with } \epsilon_{ijk} \overset{\mathrm{i.i.d.}}{\sim} \mathcal{N}(0, \sigma^2),$$
+
+where 
+$\mu_{ij} = \mu + \alpha_i + \beta_j + \gamma_{ij}$.
+
+By notation, 
+
+$i$ represents the treatment of class type, and  $i = 1, 2, 3$ means the type of class is `small`, `regular` and `regular with aide`.
+
+$j$ represents the treatment of school ID. $j = 1, \cdots, 76$.
+
+$k$ represents summary information about math score by different cases. $k = 1, \cdots, 339$.
+
+$Y_{ijk}$ refers to  
+
+where $\mu$ is the grand mean, $\alpha_i$ is the additive main effect of level $i $ from the first factor (''i''-th row in the contigency table), $\beta_j$ is the additive main effect of level $j$ from the second factor (''j''-th column in the contingency table) and $\gamma_{ij}$ is the non-additive interaction effect of treatment $(i,j)$ from both factors (cell at row ''i'' and column ''j'' in the contingency table).
+
+Another equivalent way of describing the two-way ANOVA is by mentioning that, besides the variation explained by the factors, there remains some [[statistical noise]]. This amount of unexplained variation is handled via the introduction of one random variable per data point, $\epsilon_{ijk}$, called [[Errors and residuals in statistics|error]]. These $n$ random variables are seen as deviations from the means, and are assumed to be independent and normally distributed:
+
+
+
+
