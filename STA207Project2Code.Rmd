@@ -86,6 +86,10 @@ $Y_{ijk}$ refers to summary information about math score for $k$-th teacher ID i
 
 $\mu$ is the grand mean, $\alpha_i$ is the additive main effect of level $i$ from the first factor, $\beta_j$ is the additive main effect of level $j$ from the second factor and $\gamma_{ij}$ is the non-additive interaction effect of treatment $(i,j)$ from both factors.
 
+To ensure identifiability of parameters, we can add the following "sum-to-zero" constraints:
+
+$$\sum_i \alpha_i = \sum_j \beta_j = \sum_i \gamma_{ij} =\sum_j \gamma_{ij}= 0$$
+
 Assumptions:
 
 a. the data points are relevant with respect to the scientific question under investigation;
@@ -93,3 +97,51 @@ b. the mean of the response variable is influenced additively (if not interactio
 c. the errors are independent;
 d. the errors have the same variance;
 c. the errors are normally distributed.
+
+3.  Explain why your model is appropriate for this task on this data set. You may want to include statistics and plots in your explanation. 
+
+```{r}
+pairs(data_by_teacher[c(4,1,2)])
+```
+
+From the pairwise plot there is no non-linearity pattern. 
+
+```{r,warning= FALSE}
+interaction.plot(data_by_teacher$g1classtype, data_by_teacher$g1schid, 
+                 data_by_teacher$mean,legend = FALSE)
+```
+
+4.  Fit the model you choose in Task 2 and show your fits in the report. 
+
+
+```{r}
+full_model=lm(mean~g1classtype+g1schid+g1classtype*g1schid,data=data_by_teacher);
+
+reduced_model=lm(mean~g1classtype+g1schid,data=data_by_teacher);
+
+anova(reduced_model,full_model)
+```
+
+The test result show that interaction effects are very likely to be absent from this data set. This means that we need to treat each combination as a unit, whereas we can compare each type of main effects separately.
+
+
+5.  Conduct model diagnostic and/or sensitivity analysis. 
+
+```{r,warning=FALSE}
+library(stats)
+anova.fit<-aov(mean~g1classtype+g1schid+g1classtype*g1schid,data=data_by_teacher)
+par(mfrow=c(2,2))
+plot(anova.fit)
+par(mfrow=c(1,1))
+```
+
+
+6.  Test whether there is a difference in math scaled score in 1st grade across teachers in different class types. Justify your choice of test. 
+
+We can use the Tukey-Kramer method for this task.
+
+```{r}
+alpha=0.05;
+T.ci=TukeyHSD(anova.fit,conf.level = 1-alpha)
+plot(T.ci, las=1 , col="brown")
+```
