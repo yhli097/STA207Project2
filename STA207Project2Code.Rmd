@@ -49,17 +49,17 @@ We can check each teacher ID was in only one certain type of class and in only o
             min = min(g1tmathss),max = max(g1tmathss)))
 par(mfrow=c(2,3))
 hist(data_by_teacher$mean, xlab = c("mean of math score"), 
-     main =title("Histogram of mean math score"))
+     main =title("Histogram of mean"))
 hist(data_by_teacher$sd, xlab = c("sd of math score"), 
-     main =title("Histogram of standard deviation on math score"))
+     main =title("Histogram of standard deviation"))
 hist(data_by_teacher$median, xlab = c("median of math score"), 
-     main =title("Histogram of median on math score"))
+     main =title("Histogram of median"))
 hist(data_by_teacher$min, xlab = c("min of math score"), 
-     main =title("Histogram of min on math score"))
+     main =title("Histogram of min"))
 hist(data_by_teacher$max, xlab = c("max of math score"), 
-     main =title("Histogram of max on math score"))
+     main =title("Histogram of max"))
 hist(data_by_teacher$max-data_by_teacher$min, xlab = c("range of math score"), 
-     main =title("Histogram of range on math score"))
+     main =title("Histogram of range"))
 par(mfrow=c(1,1))
 ```
 
@@ -78,16 +78,18 @@ By notation,
 
 $i$ represents the treatment of class type, and  $i = 1, 2, 3$ means the type of class is `small`, `regular` and `regular with aide`.
 
-$j$ represents the treatment of school ID. $j = 1, \cdots, 76$.
+$j$ represents the treatment of school ID, and $j = 1, \cdots, 76$. 
 
-$k$ represents summary information about math score by different cases. $k = 1, \cdots, 339$.
+$k$ represents different cases by teacher ID, and $k = 1, \cdots, 339$.
 
-$Y_{ijk}$ refers to  
+$Y_{ijk}$ refers to summary information about math score for $k$-th teacher ID in  $i$-th type of class and $j$-th school ID.
 
-where $\mu$ is the grand mean, $\alpha_i$ is the additive main effect of level $i $ from the first factor (''i''-th row in the contigency table), $\beta_j$ is the additive main effect of level $j$ from the second factor (''j''-th column in the contingency table) and $\gamma_{ij}$ is the non-additive interaction effect of treatment $(i,j)$ from both factors (cell at row ''i'' and column ''j'' in the contingency table).
+$\mu$ is the grand mean, $\alpha_i$ is the additive main effect of level $i$ from the first factor, $\beta_j$ is the additive main effect of level $j$ from the second factor and $\gamma_{ij}$ is the non-additive interaction effect of treatment $(i,j)$ from both factors.
 
-Another equivalent way of describing the two-way ANOVA is by mentioning that, besides the variation explained by the factors, there remains some [[statistical noise]]. This amount of unexplained variation is handled via the introduction of one random variable per data point, $\epsilon_{ijk}$, called [[Errors and residuals in statistics|error]]. These $n$ random variables are seen as deviations from the means, and are assumed to be independent and normally distributed:
+Assumptions:
 
-
-
-
+a. the data points are relevant with respect to the scientific question under investigation;
+b. the mean of the response variable is influenced additively (if not interaction term) and linearly by the factors;
+c. the errors are independent;
+d. the errors have the same variance;
+c. the errors are normally distributed.
