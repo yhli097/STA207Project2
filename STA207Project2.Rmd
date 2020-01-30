@@ -72,27 +72,27 @@ Based on different class type as well as school ID, we will confirm whether ther
 
 ## Two-way Anova Model
 
-In order to investigate whethere there are effects of class types on math scaled scores in 1st grade and minimize the effects of systematic error, randomized block design is uesd, i.e. we creat blocks by different schools. Within blocks, students and teachers are randomly assigned to classed of three types. Therefore, it is possible to assess the effect of different levels of class types without having to worry about variations due to changes of the schools. It should note that there are two factors in this experiment, because we are not interested in the mean scores of one type class in specific school, interaction term is excluded.
+In order to investigate whether there are effects of class types on math scaled scores in 1st grade and minimize the effects of systematic error, randomized block design is uesd, and we will creat blocks by different schools. Within blocks, students and teachers are randomly assigned to class in different types. Therefore, it is possible to assess the effect from different levels of class types without worry about the influence from different schools. Although there are two factors in this experiment, we are not interested in the effect from different class type as well as different school. As a result, interaction term in this model should be excluded.
 
-The two-way ANOVA model for a randomized block design is shown as follows:
+The two-way ANOVA model for a randomized block design is shown as below:
 
-$Y_{ijk} = \mu + \tau_{i}+ \beta{j}+\epsilon_{ijk}, i=1,2,3,~j=1,2,\cdots,76,~k=1,2,\cdots,n_{ij} \text{ with } \epsilon_{ijk} \overset{\mathrm{i.i.d.}}{\sim} \mathcal{N}(0, \sigma^2),$
+$$Y_{ijk} = \mu + \tau_{i}+ \beta_{j}+\epsilon_{ijk}, \quad\text{with}\quad \epsilon_{ijk} \overset{\mathrm{i.i.d.}}{\sim} \mathcal{N}(0, \sigma^2).$$
 
 By notation,
 
-* The index $i$ denotes main factor level. There are 3 main factor levels in our case which are small class type, regular class type and rugular+aid class type.
+* The index $i$ denotes main factor level. There are 3 levels about class type: `small`, `regular` and `rugular+aid`.
 
-* The index $j$ denotes blocking facotr level. There are 76 blocking facotr levels in our case which are different schools.
+* The index $j$ denotes blocking factor level. There are 76 levels about different school ID.
 
-* The index $k$ denotes experimental unit, i.e. teachers of 1st grade. $n_{ij}$ is the number of experimental units in treatment $(i,j)$ from both factors.
+* The index $k$ denotes experimental unit, about mean score of $k$-th teachers in 1st grade. $n_{ij}$ is the number of experimental units in treatment $(i,j)$ from both factors.
 
-* $Y_{ijk}$ denotes $k$-th mean scores of $t$-th class type in $j$_th school.
+* $Y_{ijk}$ refers to the mean math score for $k$-th teacher ID in  $i$-th type of class and $j$-th school ID.
 
-* $\mu$ denotes the overall mean of the mean scores of math in 1st grade in all treatments.
+* $\mu$ denotes the overall mean value of the mean math scores in 1st grade for all treatments.
 
 * $\tau_{i}$ denotes main effect of level $i$ from the class type factor.
 
-* $\beta{j}$ denotes blocking effect of level $j$ from the school id factor.
+* $\beta{j}$ denotes blocking effect of level $j$ from the school ID factor.
 
 * $\epsilon_{ijk}$ denotes random errors. 
 
@@ -103,12 +103,9 @@ $$\sum_i \tau_{i} = \sum_j \beta_j = 0$$
 
 Assumptions of two-way ANOVA model specified as follows:
 
-a. the data points are relevant with respect to the scientific question under investigation;
-b. the mean of the response variable is influenced additively (if not interaction term) and linearly by the factors;
-c. the errors are independent;
-d. the errors have the same variance;
-e. the errors are normally distributed.
+* the mean of the response variable is influenced additively (if not interaction term) and linearly by the factors;
 
+* The random errors are assumed to be identically and independently distributed from a normal distribution with mean $0$ and variance $\sigma^2$.
 
 ## Model Diagnostics
 
@@ -119,10 +116,6 @@ e. the errors are normally distributed.
 <span style="color:red">Note: </span> In this template, we present the unpolished tables and figures generated with generic `r` functions, and we skip all interpretation of the analysis results and the sensitivity analysis.  You can adapt any functions in this section in your report.
 
 ## Descriptive Analysis
-
-
-<span style="color:red">Note: </span> There are many ways to automatically generate summary tables in `R`, of which many would even generate html or latex tables. In this template, we will use the package `qwraps2` as an example ([link](https://cran.r-project.org/web/packages/qwraps2/vignettes/summary-statistics.html)).
-
 
 The dataset we investigate has 11601 rows and 379 cloumns, and we narrow it down to four columns, that is, g1classtype, g1schid, g1tchid, g1tmathss which are related with math scaled scores in the 1st grade. g1classtype represents the class type of students in 1st grade. g1schid represents school’s id. g1tchid represents teacher’s id. g1tmathss represents math scaled scores of students in 1st grade. Figure1 shows the basic information of four variables.
 
@@ -135,16 +128,19 @@ library(ggpubr)
 load("./STAR_Students.RData")
 data <- data.frame(g1classtype = x$g1classtype, g1schid = x$g1schid, 
                    g1tchid = x$g1tchid, g1tmathss = x$g1tmathss)
+```
 
+
+```{r}
 # Table code
 varsum <- data.frame(Name= c("g1classtype", "g1schid", "g1tchid", "g1tmathss"),
                      Type= c("qualitative variable", "qualitative variable", "qualitative variable", "quantitive variable"), 
                      "The number of levels"= c(3,76,339,NA))
-kable(varsum,caption = "Figure1: basic information of variables") %>%
+kable(varsum,caption = "Table 1: basic information of variables") %>%
   kable_styling(bootstrap_options = "striped", full_width = F )
 ```
 
-In Figure 2, the left plot shows the percentage of missing value of four variables are nearly same, and the right plot shows that missing values for these four variables nearly occur at the same rows. It can be explained that because of low grades in kindergarten in STAR project, students quit STAR project and go to another school, or they join STAR project after 1st grade. Because we don’t know how to tackle missing values, considering that we have enough data and believe that it won’t have the significant impact on the results, we drop them directly.
+In Figure 1, the above plot shows the percentage of missing value of four variables are nearly same, and the plot below shows that the location of missing values for three qualitative variables are consistent. It can be explained that because of low grades in kindergarten in STAR project, students quit STAR project and go to another school, or they join STAR project after 1st grade. Because we don't know how to tackle missing values, considering that we have enough data and believe that it won't have the significant impact on the results, we drop them directly.
 
 ```{r}
 #Code for the first plot
@@ -169,7 +165,7 @@ percentage.plot <- missing.values %>%
       scale_fill_manual(name = "", 
                         values = c('steelblue', 'tomato3'), labels = c("Present", "Missing")) +
       coord_flip() +
-      labs(title = "Figure2: Percentage of missing values", x =
+      labs(title = "Figure 1: Percentage of missing values", x =
              'Variable', y = "% of missing values")
 
 #Code for the second plot
@@ -187,6 +183,7 @@ row.plot <- data %>%
            y = "Row Number", title = "Missing values in rows") +
     coord_flip()
 
+
 #arrange them
 grid.arrange(percentage.plot, row.plot, ncol = 2)
 ```
@@ -199,25 +196,7 @@ data$g1tchid <- factor(data$g1tchid)
 ```
 
 
-Figure 3 shows the frequency number of classtype and school id. We can find that g1classtype data is roughly balanced, and there is one specific school has the frequency number which is much higher than rest of schools.
-
-```{r}
-# Figure 3
-classbar <- ggplot(data, aes(g1classtype)) +
-  geom_bar(fill = "#0073C2FF") +
-  theme_pubclean() 
-
-
-schoolbar <- ggplot(data, aes(g1schid)) +
-  geom_bar(fill = "#0073C2FF") +
-  theme_pubclean() 
-
-
-grid.arrange(classbar, schoolbar, ncol = 2)
-```
-
-In this project, we are interested in math scaled scores in the 1st grade with teachers as the unit. After verifying each teacher are only employed in specific school and teach one specific class type, we select the mean of math scaled scores of one particular class to judge teachers. Therefore, we have a new dataset which has 339 rows and four columns including g1classtype, g1schid, g1tchid and mean. Figure 4 shows the distribution of the mean of math score by different teacher. It is bell-shaped and roughly closed to normal distribution.
-
+In this project, we are interested in math scaled scores in the 1st grade with teachers as the unit. After verifying each teacher are only employed in specific school and teach one specific class type, we select the mean of math scaled scores of one particular class to judge teachers. Therefore, we have a new dataset which has 339 rows and four columns including g1classtype, g1schid, g1tchid and mean. Figure 2 shows the distribution of the mean of math score by different teacher. It is bell-shaped and roughly closed to normal distribution.
 
 ```{r}
 data_by_teacher <- data %>%
@@ -226,23 +205,113 @@ data_by_teacher <- data %>%
 
 ggplot(data_by_teacher, aes(x=mean)) + 
   geom_histogram() +
-  ggtitle("Figure 4: the mean of math score by different teacher")
+  ggtitle("Figure 2: the mean of math score by different teacher")
+
 ```
 
-In Figure 5, we can find that different class types have effects on mean scores of math. Therein, teachers in small class have the higher mean scores of math and teachers in regular class have the lower mean scores of math in general.
+Figure 3 shows the frequency number of class type and school id. Due to too many levels in g1schid, x axis labels in the plot of g1schid is omitted for readability. We can find that  g1classtype data is roughly balanced, and there is one specific school whose frequency number which is much higher than rest of schools. Figure 4 shows that the frequency number of class of different types in each school. Excepts a few extremely cases, data is more balanced than data group by class type. 
 
 ```{r}
-ggplot(data_by_teacher, aes(x=g1classtype, y=mean)) + 
-    geom_boxplot(fill="slateblue", alpha=0.2) +
-    labs(title = "Figure 5: The distribution of mean scores of math by class type")
+# Figure 3
+classbar <- ggplot(data_by_teacher, aes(g1classtype)) +
+  geom_bar(fill = "#0073C2FF") +
+  theme_pubclean() +
+  ggtitle("Figure 3: The frequency bar plots of class type and school id")
+
+
+schoolbar <- ggplot(data_by_teacher, aes(x=reorder(g1schid, -table(g1schid)[g1schid]))) +
+  geom_bar(fill = "#0073C2FF") +
+  theme_pubclean() +
+  theme(
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  labs(x = "g1schid")
+
+
+grid.arrange(classbar, schoolbar, nrow = 2) 
 ```
 
-## Sensitivity analysis
+```{r}
+# Figure 4 Bar plots of contingency tables
+ggplot(data_by_teacher %>%
+  group_by(g1classtype, g1schid) %>%
+  count(), aes(x = g1schid, y = n))+
+  geom_bar(
+    aes(fill = g1classtype), stat = "identity", color = "white",
+    position = position_dodge(0.9)) +
+  theme(
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  labs(x = "g1schid") +
+  ggtitle("Figure 4: The frequency bar plots of grouped contingency tables")
+
+```
+
+In Figure 5, it can be seen that different class types have effects on mean scores of math. Therein, teachers in small class have the higher mean scores of math and teachers in regular class have the lower mean scores of math in general. Also, different schools have impacts on mean scores of math. Aming to investigate the class types effect on mean scores of math, it is a good strategy that using schools to creat blocks for eliminating effects between different schools. 
+
+```{r}
+
+classbox <- ggplot(data_by_teacher, aes(x=g1classtype, y=mean)) + 
+    geom_boxplot(fill="slateblue", alpha=0.2) +
+    labs(title = "Figure 5: The distribution of mean scores of math by class type and school id")
 
 
-<span style="color:red">Note: </span>  Show the results of the sensitivity analysis in this section. You can also discuss any new analysis that are not in the interim report. 
+schoolbox <- ggplot(data_by_teacher, aes(x=g1schid, y=mean)) + 
+    geom_boxplot(fill="slateblue", alpha=0.2) +
+    theme(
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  labs(x = "g1schid") 
 
-### Causal Analysis
+grid.arrange(classbox, schoolbox, ncol = 2) 
+```
+
+
+## Two-way ANOVA Model
+
+**Table . ANOVA Table**
+
+|Source of Variation | Degree of Freedom | Sum Square | Mean Square | F value | P value |
+|-------|-------|------|-----|--------|----------|
+|g1classtype| 2          |11617  |  5809 | 20.991| 3.52e-09 |
+|g1schid     | 75 | 136833   | 1824  | 6.593 | < 2e-16 |
+|Residuals  | 261 | 72225  |   277                     |
+
+
+
+
+## Model Diagnostics
+
+In this experiment, researchers assigned students to small classes, regular classed and regular classes with aide randomly. Besides, teachers are also randomly assigned to classed in each school. By adding the randomized block design of schools in the experiment, there are adepuate reasons to believe that the outcomes do not denpend on each other. In other words, the model satisfies the independence assumption.
+
+From the Residuals vs Fitted Values scatterpoint, these points are uniformly distributed on both sides of x-axis, which means that our model does not violate the equal variance assumption.
+
+```{r}
+library(stats);library(car);
+#check the mean zero and equal variance
+anova.fit<-aov(mean ~ g1classtype + g1schid,data = data_by_teacher)
+plot(anova.fit, which = c(1,3))
+summary(anova.fit)
+
+
+
+leveneTest(mean ~ g1classtype*g1schid,data = data_by_teacher)
+```
+
+The Normal Q-Q plot illustrates that the residuals are heavy tailed compared with the normal distribution. In order to check the normality assumption more precisely, we conduct the Shapiro-Wilk Normality Test, whose null hypothesis is $H_0:$the popluation is normally distributed. The result shows that $W=0.9802$ and the $p-value$ is 0.0001, which is much smaller than the significant level 0.01. Therefore, we are 99% confident to reject the null hypothesis $H_0:$the residuals is normally distributed and our model does not follow the normality assumption.
+
+```{r}
+#normality assumption
+plot(anova.fit, which = 2)
+
+shapiro.test(anova.fit$residuals)
+```
+
+
+The model diagnostic part will confirm whether the model asssumptions of the two-way ANOVA model so that it is appropriate for the problem setting. For the residuals, we will use the residuals vs fitted values plot to check equal variance assumption. Then, Q-Q plot is drawn to see whether the residuals are normally distributed roughly. To be more precise, the Shapiro-Wilk Normality Test is conducted.
+
+
+## Causal Analysis
 
 From [Diane Whitmore Schanzenbach Brookings Papers on Education Policy No. 9 (2006/2007), pp. 205-228] we can know, project STAR is a randomized experiment since it ramdomly assigns students to different class types and teachers are also randomly assigned to class types. Therefore, we can make some causal inference if it follows two assumptions:
 
