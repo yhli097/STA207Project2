@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r,message=FALSE}
 library(tidyverse)
+library(stats)
+library(car)
 ```
 
 1.  Explore math scaled scores in the 1st with teachers as the unit. Generate summary statistics (in forms of tables or plots) that you find informative, and explain them. 
@@ -96,7 +98,7 @@ a. the data points are relevant with respect to the scientific question under in
 b. the mean of the response variable is influenced additively (if not interaction term) and linearly by the factors;
 c. the errors are independent;
 d. the errors have the same variance;
-c. the errors are normally distributed.
+e. the errors are normally distributed.
 
 3.  Explain why your model is appropriate for this task on this data set. You may want to include statistics and plots in your explanation. 
 
@@ -127,12 +129,39 @@ The test result show that interaction effects are very likely to be absent from 
 
 5.  Conduct model diagnostic and/or sensitivity analysis. 
 
+a. independence, need descriptive 
+
+In this experiment, researchers assigned students to small classes, regular classed and regular classes with aide randomly.
+
+From the Residuals vs Fitted Values scatterpoint, we can see that the residuals are around zero. It shows that the zero mean assumption.
+
+Besides, these points are uniformly distributed on both sides of x-axis, which means that our model does not violate the equal variance assumption.
+
 ```{r,warning=FALSE}
-library(stats)
-anova.fit<-aov(mean~g1classtype+g1schid+g1classtype*g1schid,data=data_by_teacher)
-par(mfrow=c(2,2))
-plot(anova.fit)
-par(mfrow=c(1,1))
+anova.fit<-aov(mean~g1classtype+g1schid,data=data_by_teacher)
+#check the mean zero and equal variance
+plot(anova.fit, which = 1)
+summary(anova.fit)
+```
+
+The Normal Q-Q plot illustrates that the residuals are a little bit heavy tailed compared with the normal distribution. In order to check the normality assumption more precisely, we conduct the Shapiro-Wilk Normality Test. The result shows that $W=0.9802$ and the $p-value$ is 0.0001, which is much smaller than the significant level 0.01. Therefore, we are 99% confident that the residuals are normally distributed and our model follows the normality assumption.
+
+```{r}
+#normality assumption
+plot(anova.fit, which = 2)
+
+shapiro.test(anova.fit$residuals)
+```
+
+```{r}
+# Krusal-Wallis test:
+kruskal.test(mean ~ interaction(g1classtype, g1schid) , data = data_by_teacher)
+```
+
+```{r}
+# Krusal-Wallis test:
+
+kruskal.test(mean ~ interaction(g1classtype, g1schid) , data = data_by_teacher)
 ```
 
 
@@ -145,3 +174,7 @@ alpha=0.05;
 T.ci=TukeyHSD(anova.fit,conf.level = 1-alpha)
 plot(T.ci, las=1 , col="brown")
 ```
+
+7.  Discuss whether you are able to make any causal statements based on your analysis. 
+
+8.  Is there any difference between the results from Project 2 compared to the results from Project 1?
