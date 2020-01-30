@@ -24,6 +24,7 @@ knitr::opts_chunk$set(echo=FALSE,message=FALSE,warning=FALSE)
 Note: The report might be shown to the class as examples if it is done well very or very badly, with your identity redacted. 
 
 ***
+This Document is the project 2 of Team 7 in STA 207, Winter 2020.
 
 # Group Partners:
 
@@ -35,74 +36,83 @@ Note: The report might be shown to the class as examples if it is done well very
 
 4. Jian Shi jnshi@ucdavis.edu contribution: model diagnose
 
+The repository in Github is on https://github.com/yhli097/STA207Project2.git
+
 ***
 
 # Introduction
-
-This Document is the project 2 of Group 7 in STA 207, Winter Quarter 2020.
-
-The repository in Github is on https://github.com/yhli097/STA207-Project1-yhli097.git
-
 
 ## Background
 
 Tennesses Student/Teacher Achievement Ratio study (Project STAR) was conducted in the late 1980s to evaluate the effect of class size on test scores. The study randomly assigned students to small classes, regular classes, and regular classes with a teacher’s aide. In order to randomize properly, schools were enrolled only if they had enough studybody to have at least one class of each type. Once the schools were enrolled, students were randomly assigned to the three types of classes, and one teacher was randomly assigned to one class.
 
+The primary scientific question of interest is whether there is a treatment effect of class types on math scaled scores across teachers in 1st grade, with the school indicator as the other factor. In this study, we implement exploratory data analysis, two-way anova model, model diagnostics, hypothesis testing. In the end, we conclude our findings and discuss any causal statements that could possibly be made based on our analysis and assumptions, and compare the results between Project 2 and Project 1.
+
 ## Statistical questions of interest
 
-Our questions have three parts:
-
-a. How to build a one-way ANOVA model to study the effects of class types on the math scaled scores in 1st grade? Is this model appropriate? How does the model fit the data?
-
-b. Is there any difference in the math scaled score in 1st grade across students in different class types?
-
-c. Can we make any causal statements based on the analysis?
+To answer the primary scientific question of interest, we propose to fit a two-factors anova model with the quantitative test scores grouped by teacher as the response variable and the class type as well as school as the predictor variable. We will then run our model diagonstics to see if the assumptions of the model hold and test whether or not there is a treatment effect on the test scores.
 
 
 # Analysis Plan
 
 
-
-
 ## Population and study design
 
+According to the description of the dataset, over 7,000 students in 76 schools were randomly assigned into one of three different treatments: small class (13 to 17 students per teacher), regular class (22 to 25 students per teacher), and regular-with-aide class (22 to 25 students with a full-time teacher’s aide). Classroom teachers were also randomly assigned to the classes they would teach. We will only focus on the data about the 1st grade students as study targets[1].
 
-<span style="color:red">Note: </span>  Discuss the target population of this analysis, and how the study is design to collect representative data for this population.
+## Descriptive Analysis
 
-## Statistical Analysis
+First of all, we will pick up all valuable variables we are interested in. To deal with missing value, we will draw plots to show the percentage of missing value for these variables, then decide whether drop the missing value or not. 
 
-### Descriptive Analysis
+We will then explore the math scores grouped by teacher ID. To choose the summary information on math scores in each unit, we will plot different distributions to find a statistic which is the most informative as well as normal-like. 
 
-
-### Main Analysis
-
-
-<span style="color:red">Note: </span>  Describe the analysis you plan to conduct to answer the questions of interest. Remember to rename the section title to fit the actual analysis you propose, e.g., inferential analysis, clustering, prediction model, etc. For instance, in this report, this section should explain
-
-* Detailed model specification of linear regression model.
-* Description of the Cox proportional hazard model.
-* Description of the model with interactions.
-
-Furthermore, this section should also explain how you plan to interpret the conclusion---this is a convention for the analysis of clinical trials, which may not apply to other data science projects.
+In the end, we study the treatment of class type as well as school ID. 
+Based on different class type as well as school ID, we will confirm whether there is any difference on math scores across teachers not. 
 
 
+## Two-way Anova Model
 
-### Sensitivity Analysis
+In order to investigate whethere there are effects of class types on math scaled scores in 1st grade and minimize the effects of systematic error, randomized block design is uesd, i.e. we creat blocks by different schools. Within blocks, students and teachers are randomly assigned to classed of three types. Therefore, it is possible to assess the effect of different levels of class types without having to worry about variations due to changes of the schools. It should note that there are two factors in this experiment, because we are not interested in the mean scores of one type class in specific school, interaction term is excluded.
+
+The two-way ANOVA model for a randomized block design is shown as follows:
+
+$Y_{ijk} = \mu + \tau_{i}+ \beta{j}+\epsilon_{ijk}, i=1,2,3,~j=1,2,\cdots,76,~k=1,2,\cdots,n_{ij} \text{ with } \epsilon_{ijk} \overset{\mathrm{i.i.d.}}{\sim} \mathcal{N}(0, \sigma^2),$
+
+By notation,
+
+* The index $i$ denotes main factor level. There are 3 main factor levels in our case which are small class type, regular class type and rugular+aid class type.
+
+* The index $j$ denotes blocking facotr level. There are 76 blocking facotr levels in our case which are different schools.
+
+* The index $k$ denotes experimental unit, i.e. teachers of 1st grade. $n_{ij}$ is the number of experimental units in treatment $(i,j)$ from both factors.
+
+* $Y_{ijk}$ denotes $k$-th mean scores of $t$-th class type in $j$_th school.
+
+* $\mu$ denotes the overall mean of the mean scores of math in 1st grade in all treatments.
+
+* $\tau_{i}$ denotes main effect of level $i$ from the class type factor.
+
+* $\beta{j}$ denotes blocking effect of level $j$ from the school id factor.
+
+* $\epsilon_{ijk}$ denotes random errors. 
 
 
-<span style="color:red">Note: </span>  Describe additional analysis you plan to conduct to complement the main analysis. This section should include analysis to show that the results you get are not sensitive to the model choices or assumptions. You can also conduct analysis to account for features in the data you have not foreseen.  
+Moreover, there is a "sum-to-zero" constraint shown in the following :
 
-### Causal Analysis
+$$\sum_i \tau_{i} = \sum_j \beta_j = 0$$
 
-From [Diane Whitmore Schanzenbach Brookings Papers on Education Policy No. 9 (2006/2007), pp. 205-228] we can know, project STAR is a randomized experiment since it ramdomly assigns students to different class types and teachers are also randomly assigned to class types. Therefore, we can make some causal inference if it follows two assumptions:
+Assumptions of two-way ANOVA model specified as follows:
 
-***Stable unit treatment value assumption***: The potential outcomes for any unit do not vary with the treatments assigned to other units, and, for each unit, there are no different forms or versions of each treatments level, which lead to different potential outcomes.
+a. the data points are relevant with respect to the scientific question under investigation;
+b. the mean of the response variable is influenced additively (if not interaction term) and linearly by the factors;
+c. the errors are independent;
+d. the errors have the same variance;
+e. the errors are normally distributed.
 
-***Ignorability***: Treatment assignment is independent of the outcomes.
 
-For the first assumption, it means that we could exclude the probability that a teacher was assigned or not assgned to small class does not effect the mean of math grade in other class types. Also, same version of treatment need to be ensured, that means teachers in the class of the one specific type give consistent education of that class type. Both of two points are hold based on the setting of the experiment. For the second assumptions, because of randomized experiment, other factors don't effect our treatments and we don't have the selection bias, the average difference in outcomes between the three groups can only be attributable to treatment.
+## Model Diagnostics
 
-After verifying two assumptions, we use avarage treatment effect to measure the causal effect. Since there are three class types, we do pairwise comparisons to investigate it. We compare factor level means between each pair. From the above discussion, we can make a conclusion that, small class can cause higher mean scores by different teachers. 
+
 
 # Results
 
@@ -232,15 +242,28 @@ ggplot(data_by_teacher, aes(x=g1classtype, y=mean)) +
 
 <span style="color:red">Note: </span>  Show the results of the sensitivity analysis in this section. You can also discuss any new analysis that are not in the interim report. 
 
+### Causal Analysis
+
+From [Diane Whitmore Schanzenbach Brookings Papers on Education Policy No. 9 (2006/2007), pp. 205-228] we can know, project STAR is a randomized experiment since it ramdomly assigns students to different class types and teachers are also randomly assigned to class types. Therefore, we can make some causal inference if it follows two assumptions:
+
+***Stable unit treatment value assumption***: The potential outcomes for any unit do not vary with the treatments assigned to other units, and, for each unit, there are no different forms or versions of each treatments level, which lead to different potential outcomes.
+
+***Ignorability***: Treatment assignment is independent of the outcomes.
+
+For the first assumption, it means that we could exclude the probability that a teacher was assigned or not assgned to small class does not effect the mean of math grade in other class types. Also, same version of treatment need to be ensured, that means teachers in the class of the one specific type give consistent education of that class type. Both of two points are hold based on the setting of the experiment. For the second assumptions, because of randomized experiment, other factors don't effect our treatments and we don't have the selection bias, the average difference in outcomes between the three groups can only be attributable to treatment.
+
+After verifying two assumptions, we use avarage treatment effect to measure the causal effect. Since there are three class types, we do pairwise comparisons to investigate it. We compare factor level means between each pair. From the above discussion, we can make a conclusion that, small class can cause higher mean scores by different teachers. 
 
 
 # Discussion
 
 <span style="color:red">Note: </span> Discuss the limitations of the presented projects, and comment on how this project enlightens future research or analysis.
 
-# Reference
+# Appendix I. Reference
 
-# Session information
+[1] C.M. Achilles; Helen Pate Bain; Fred Bellott; Jayne Boyd-Zaharias; Jeremy Finn; John Folger; John Johnston; Elizabeth Word, 2008, “Tennessee’s Student Teacher Achievement Ratio (STAR) project”, https://doi.org/10.7910/DVN/SIWH9F, Harvard Dataverse, V1, UNF:3:Ji2Q+9HCCZAbw3csOdMNdA== [fileUNF]
+
+# Appendix II. Session information
 ```{r}
 print(sessionInfo(), local = FALSE)
 ```
