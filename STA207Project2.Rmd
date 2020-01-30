@@ -1,16 +1,29 @@
 ---
-title: 'Project 2: Project STAR II'
+title: "Project 2: Project STAR II"
 output:
   html_document:
+    df_print: paged
+    fig_caption: yes
     number_sections: yes
   pdf_document: default
-date: "01/31/2020"
+  date: "01/31/2020"
 ---
 
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 18px;
+  }
+
+</style>
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo=FALSE,message=FALSE,warning=FALSE)
 ```
+***
+Note: The report might be shown to the class as examples if it is done well very or very badly, with your identity redacted. 
+
+***
 
 # Group Partners:
 
@@ -22,45 +35,20 @@ knitr::opts_chunk$set(echo = TRUE)
 
 4. Jian Shi jnshi@ucdavis.edu contribution: model diagnose
 
+***
+
 # Introduction
 
-This Document is the first project of Group 7 in STA 207, Winter Quarter 2020.
+This Document is the project 2 of Group 7 in STA 207, Winter Quarter 2020.
 
 The repository in Github is on https://github.com/yhli097/STA207-Project1-yhli097.git
 
-There is also information in code like graph. Try PDF file if html file displays incompetely.
 
 ## Background
 
 Tennesses Student/Teacher Achievement Ratio study (Project STAR) was conducted in the late 1980s to evaluate the effect of class size on test scores. The study randomly assigned students to small classes, regular classes, and regular classes with a teacher’s aide. In order to randomize properly, schools were enrolled only if they had enough studybody to have at least one class of each type. Once the schools were enrolled, students were randomly assigned to the three types of classes, and one teacher was randomly assigned to one class.
 
-## Data Description
-
-The `STAR` dataset from the `AER` package which are from the very influential randomized experient STAR, assessing the effect of reducing class size on test scores in the early grades. The dataset contains scaled scores for math and reading from kindergarten to 3rd grade. We will only examine the math scores in 1st grade in this project[1].
-
-
-The following is the description of `STAR`[2].
-
-STAR is a data frame containing 11,598 observations on 47 variables.
-
-Here are main variables for 1st grade.
-
-
-|     Variable      |                                 Description                |
-| ---------|:--------------------------------------------------------------------------:|
-| `gender`     | factor indicating student's gender. |
-| `ethnicity`      | factor indicating student's ethnicity with levels `cauc` (Caucasian), `afam` (African-American), `asian` (Asian), `hispanic` (Hispanic), `amindian` (American-Indian) or `other`. |
-| `birth` | student's birth quarter (of class yearqtr). |
-| `star1` | factor indicating the STAR class type in 1st grade: `regular`, `small`, or `regular-with-aide`. `NA` indicates that no STAR class was attended. |
-| `read1` | total reading scaled score in 1st grade. |
-| `math1` | total math scaled score in 1st grade. |
-| `lunch1` | factor indicating whether the student qualified for free lunch in 1st grade.|
-| `school1` | factor indicating school type in 1st grade: `inner-city`, `suburban`, `rural` or `urban`. |
-
-
-
-
-## Question of Interest
+## Statistical questions of interest
 
 Our questions have three parts:
 
@@ -71,21 +59,189 @@ b. Is there any difference in the math scaled score in 1st grade across students
 c. Can we make any causal statements based on the analysis?
 
 
-# Data analysis
+# Analysis Plan
 
-# Result
+
+
+
+## Population and study design
+
+
+<span style="color:red">Note: </span>  Discuss the target population of this analysis, and how the study is design to collect representative data for this population.
+
+## Statistical Analysis
+
+### Descriptive Analysis
+
+
+### Main Analysis
+
+
+<span style="color:red">Note: </span>  Describe the analysis you plan to conduct to answer the questions of interest. Remember to rename the section title to fit the actual analysis you propose, e.g., inferential analysis, clustering, prediction model, etc. For instance, in this report, this section should explain
+
+* Detailed model specification of linear regression model.
+* Description of the Cox proportional hazard model.
+* Description of the model with interactions.
+
+Furthermore, this section should also explain how you plan to interpret the conclusion---this is a convention for the analysis of clinical trials, which may not apply to other data science projects.
+
+
+
+### Sensitivity Analysis
+
+
+<span style="color:red">Note: </span>  Describe additional analysis you plan to conduct to complement the main analysis. This section should include analysis to show that the results you get are not sensitive to the model choices or assumptions. You can also conduct analysis to account for features in the data you have not foreseen.  
+
+### Causal Analysis
+
+From [Diane Whitmore Schanzenbach Brookings Papers on Education Policy No. 9 (2006/2007), pp. 205-228] we can know, project STAR is a randomized experiment since it ramdomly assigns students to different class types and teachers are also randomly assigned to class types. Therefore, we can make some causal inference if it follows two assumptions:
+
+***Stable unit treatment value assumption***: The potential outcomes for any unit do not vary with the treatments assigned to other units, and, for each unit, there are no different forms or versions of each treatments level, which lead to different potential outcomes.
+
+***Ignorability***: Treatment assignment is independent of the outcomes.
+
+For the first assumption, it means that we could exclude the probability that a teacher was assigned or not assgned to small class does not effect the mean of math grade in other class types. Also, same version of treatment need to be ensured, that means teachers in the class of the one specific type give consistent education of that class type. Both of two points are hold based on the setting of the experiment. For the second assumptions, because of randomized experiment, other factors don't effect our treatments and we don't have the selection bias, the average difference in outcomes between the three groups can only be attributable to treatment.
+
+After verifying two assumptions, we use avarage treatment effect to measure the causal effect. Since there are three class types, we do pairwise comparisons to investigate it. We compare factor level means between each pair. From the above discussion, we can make a conclusion that, small class can cause higher mean scores by different teachers. 
+
+# Results
+
+<span style="color:red">Note: </span> In this template, we present the unpolished tables and figures generated with generic `r` functions, and we skip all interpretation of the analysis results and the sensitivity analysis.  You can adapt any functions in this section in your report.
+
+## Descriptive Analysis
+
+
+<span style="color:red">Note: </span> There are many ways to automatically generate summary tables in `R`, of which many would even generate html or latex tables. In this template, we will use the package `qwraps2` as an example ([link](https://cran.r-project.org/web/packages/qwraps2/vignettes/summary-statistics.html)).
+
+
+The dataset we investigate has 11601 rows and 379 cloumns, and we narrow it down to four columns, that is, g1classtype, g1schid, g1tchid, g1tmathss which are related with math scaled scores in the 1st grade. g1classtype represents the class type of students in 1st grade. g1schid represents school’s id. g1tchid represents teacher’s id. g1tmathss represents math scaled scores of students in 1st grade. Figure1 shows the basic information of four variables.
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(kableExtra)
+library(gridExtra)
+library(ggpubr)
+load("./STAR_Students.RData")
+data <- data.frame(g1classtype = x$g1classtype, g1schid = x$g1schid, 
+                   g1tchid = x$g1tchid, g1tmathss = x$g1tmathss)
+
+# Table code
+varsum <- data.frame(Name= c("g1classtype", "g1schid", "g1tchid", "g1tmathss"),
+                     Type= c("qualitative variable", "qualitative variable", "qualitative variable", "quantitive variable"), 
+                     "The number of levels"= c(3,76,339,NA))
+kable(varsum,caption = "Figure1: basic information of variables") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F )
+```
+
+In Figure 2, the left plot shows the percentage of missing value of four variables are nearly same, and the right plot shows that missing values for these four variables nearly occur at the same rows. It can be explained that because of low grades in kindergarten in STAR project, students quit STAR project and go to another school, or they join STAR project after 1st grade. Because we don’t know how to tackle missing values, considering that we have enough data and believe that it won’t have the significant impact on the results, we drop them directly.
+
+```{r}
+#Code for the first plot
+missing.values <- data %>%
+  gather(key = "key", value = "val") %>%
+  mutate(isna = is.na(val)) %>%
+  group_by(key) %>%
+  mutate(total = n()) %>%
+  group_by(key, total, isna) %>%
+  summarise(num.isna = n()) %>%
+  mutate(pct = num.isna / total * 100)
+
+levels <-
+    (missing.values  %>% filter(isna == T) %>% arrange(desc(pct)))$key
+
+percentage.plot <- missing.values %>%
+      ggplot() +
+        geom_bar(aes(x = reorder(key, desc(pct)), 
+                     y = pct, fill=isna), 
+                 stat = 'identity', alpha=0.8) +
+      scale_x_discrete(limits = levels) +
+      scale_fill_manual(name = "", 
+                        values = c('steelblue', 'tomato3'), labels = c("Present", "Missing")) +
+      coord_flip() +
+      labs(title = "Figure2: Percentage of missing values", x =
+             'Variable', y = "% of missing values")
+
+#Code for the second plot
+row.plot <- data %>%
+  mutate(id = row_number()) %>%
+  gather(-id, key = "key", value = "val") %>%
+  mutate(isna = is.na(val)) %>%
+  ggplot(aes(key, id, fill = isna)) +
+    geom_raster(alpha=0.8) +
+    scale_fill_manual(name = "",
+        values = c('steelblue', 'tomato3'),
+        labels = c("Present", "Missing")) +
+    scale_x_discrete(limits = levels) +
+    labs(x = "Variable",
+           y = "Row Number", title = "Missing values in rows") +
+    coord_flip()
+
+#arrange them
+grid.arrange(percentage.plot, row.plot, ncol = 2)
+```
+
+```{r}
+#remove NA
+data <- na.omit(data)
+data$g1schid <- factor(data$g1schid)
+data$g1tchid <- factor(data$g1tchid)
+```
+
+
+Figure 3 shows the frequency number of classtype and school id. We can find that g1classtype data is roughly balanced, and there is one specific school has the frequency number which is much higher than rest of schools.
+
+```{r}
+# Figure 3
+classbar <- ggplot(data, aes(g1classtype)) +
+  geom_bar(fill = "#0073C2FF") +
+  theme_pubclean() 
+
+
+schoolbar <- ggplot(data, aes(g1schid)) +
+  geom_bar(fill = "#0073C2FF") +
+  theme_pubclean() 
+
+
+grid.arrange(classbar, schoolbar, ncol = 2)
+```
+
+In this project, we are interested in math scaled scores in the 1st grade with teachers as the unit. After verifying each teacher are only employed in specific school and teach one specific class type, we select the mean of math scaled scores of one particular class to judge teachers. Therefore, we have a new dataset which has 339 rows and four columns including g1classtype, g1schid, g1tchid and mean. Figure 4 shows the distribution of the mean of math score by different teacher. It is bell-shaped and roughly closed to normal distribution.
+
+
+```{r}
+data_by_teacher <- data %>%
+  group_by(g1classtype,g1schid,g1tchid) %>%
+  summarize(mean = mean(g1tmathss))
+
+ggplot(data_by_teacher, aes(x=mean)) + 
+  geom_histogram() +
+  ggtitle("Figure 4: the mean of math score by different teacher")
+```
+
+In Figure 5, we can find that different class types have effects on mean scores of math. Therein, teachers in small class have the higher mean scores of math and teachers in regular class have the lower mean scores of math in general.
+
+```{r}
+ggplot(data_by_teacher, aes(x=g1classtype, y=mean)) + 
+    geom_boxplot(fill="slateblue", alpha=0.2) +
+    labs(title = "Figure 5: The distribution of mean scores of math by class type")
+```
+
+## Sensitivity analysis
+
+
+<span style="color:red">Note: </span>  Show the results of the sensitivity analysis in this section. You can also discuss any new analysis that are not in the interim report. 
+
+
 
 # Discussion
 
-# References
+<span style="color:red">Note: </span> Discuss the limitations of the presented projects, and comment on how this project enlightens future research or analysis.
 
-[1] https://chenshizhe.github.io/STA207W2020/ch-proj.html#project-1-project-star-i
+# Reference
 
-[2] https://cran.r-project.org/web/packages/AER/AER.pdf
-
-[3] https://en.wikipedia.org/wiki/Bartlett%27s_test
-
-[4] https://en.wikipedia.org/wiki/Levene%27s_test
-
-[5] https://en.m.wikipedia.org/wiki/Behrens%E2%80%93Fisher_problem
+# Session information
+```{r}
+print(sessionInfo(), local = FALSE)
+```
 
