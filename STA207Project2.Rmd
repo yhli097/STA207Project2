@@ -1,11 +1,11 @@
 ---
 title: "Project 2: Project STAR II"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
     fig_caption: yes
     number_sections: yes
-  pdf_document: default
   date: "01/31/2020"
 ---
 
@@ -20,9 +20,6 @@ body{ /* Normal  */
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo=FALSE,message=FALSE,warning=FALSE)
 ```
-***
-Note: The report might be shown to the class as examples if it is done well very or very badly, with your identity redacted. 
-
 ***
 This Document is the project 2 of Team 7 in STA 207, Winter 2020.
 
@@ -55,46 +52,27 @@ To answer the primary scientific question of interest, we propose to fit a two-f
 
 # Analysis Plan
 
-
 ## Population and study design
 
 According to the description of the dataset, over 7,000 students in 76 schools were randomly assigned into one of three different treatments: small class (13 to 17 students per teacher), regular class (22 to 25 students per teacher), and regular-with-aide class (22 to 25 students with a full-time teacher’s aide). Classroom teachers were also randomly assigned to the classes they would teach. We will only focus on the data about the 1st grade students as study targets[1].
 
 ## Descriptive Analysis
 
-First of all, we will pick up all valuable variables we are interested in. To deal with missing value, we will draw plots to show the percentage of missing value for these variables, then decide whether drop the missing value or not. 
-
-We will then explore the math scores grouped by teacher ID. To choose the summary information on math scores in each unit, we will plot different distributions to find a statistic which is the most informative as well as normal-like. 
-
-In the end, we study the treatment of class type as well as school ID. 
-Based on different class type as well as school ID, we will confirm whether there is any difference on math scores across teachers not. 
-
+First of all, we will pick up all valuable variables we are interested in. To deal with missing value, we will draw plots to show the percentage of missing value for these variables, then decide whether drop the missing value or not. We will then explore the math scores grouped by teacher ID. To choose the summary information on math scores in each unit, we will plot different distributions to find a statistic which is the most informative as well as normal-like. In the end, we study the treatment of class type as well as school ID. Based on different class type as well as school ID, we will draw box plot on math score and check if there is any difference in different treament. 
 
 ## Two-way Anova Model
 
 In order to investigate whether there are effects of class types on math scaled scores in 1st grade and minimize the effects of systematic error, randomized block design is uesd, and we will creat blocks by different schools. Within blocks, students and teachers are randomly assigned to class in different types. Therefore, it is possible to assess the effect from different levels of class types without worry about the influence from different schools. Although there are two factors in this experiment, we are not interested in the effect from different class type as well as different school. As a result, interaction term in this model should be excluded.
 
 The two-way ANOVA model for a randomized block design is shown as below:
-
 $$Y_{ijk} = \mu + \tau_{i}+ \beta_{j}+\epsilon_{ijk}, \quad\text{with}\quad \epsilon_{ijk} \overset{\mathrm{i.i.d.}}{\sim} \mathcal{N}(0, \sigma^2).$$
 
 By notation,
 
-* The index $i$ denotes main factor level. There are 3 levels about class type: `small`, `regular` and `rugular+aid`.
+* The index $i$ denotes main factor level. There are 3 levels about class type: `small`, `regular` and `rugular+aid`. The index $j$ denotes blocking factor level. There are 76 levels about different school ID. The index $k$ denotes experimental unit, about mean score of $k$-th teachers in 1st grade.
 
-* The index $j$ denotes blocking factor level. There are 76 levels about different school ID.
-
-* The index $k$ denotes experimental unit, about mean score of $k$-th teachers in 1st grade. $n_{ij}$ is the number of experimental units in treatment $(i,j)$ from both factors.
-
-* $Y_{ijk}$ refers to the mean math score for $k$-th teacher ID in  $i$-th type of class and $j$-th school ID.
-
-* $\mu$ denotes the overall mean value of the mean math scores in 1st grade for all treatments.
-
-* $\tau_{i}$ denotes main effect of level $i$ from the class type factor.
-
-* $\beta{j}$ denotes blocking effect of level $j$ from the school ID factor.
-
-* $\epsilon_{ijk}$ denotes random errors. 
+* $Y_{ijk}$ refers to the mean math score for $k$-th teacher ID in  $i$-th type of class and $j$-th school ID. $\mu$ denotes the overall mean value of the mean math scores in 1st grade for all treatments. $\tau_{i}$ denotes main effect of level $i$ from the class type factor. $\beta{j}$ denotes blocking effect of level $j$ from the school ID factor.
+$\epsilon_{ijk}$ denotes random errors. 
 
 
 Moreover, there is a "sum-to-zero" constraint shown in the following :
@@ -104,20 +82,21 @@ $$\sum_i \tau_{i} = \sum_j \beta_j = 0$$
 Assumptions of two-way ANOVA model specified as follows:
 
 * the mean of the response variable is influenced additively (if not interaction term) and linearly by the factors;
-
 * The random errors are assumed to be identically and independently distributed from a normal distribution with mean $0$ and variance $\sigma^2$.
 
 ## Model Diagnostics
 
+This part will check the assumptions of our one-way ANOVA model so that this model is appropriate. To verify the independence assumption, we would analyze the experiment design to check the randomization of the samples. For the residuals, we would use the residuals v.s. fitted values plot to check equal variance assumption. Then, Q-Q plot is drawn to check whether the residuals are normally distributed or not.
 
+## Hypothesis Testing
+
+In this part, in order to investigate whether there is a treatment effect based on class types, we decide to use F-test. Moreover, if there is a treatment effect, we will investigate comparisons between two different class types. Because our dataset is unbalanced for each group, Tukey’s Procedure is the best method to test among Tukey, Bonferroni and Scheffe. Moreover, Tukey’s Procedure has the smallest T-statistics, which means it has the narrowest confidence interval, then it can give a more precise estimation of the difference.
 
 # Results
 
-<span style="color:red">Note: </span> In this template, we present the unpolished tables and figures generated with generic `r` functions, and we skip all interpretation of the analysis results and the sensitivity analysis.  You can adapt any functions in this section in your report.
-
 ## Descriptive Analysis
 
-The dataset we investigate has 11601 rows and 379 cloumns, and we narrow it down to four columns, that is, g1classtype, g1schid, g1tchid, g1tmathss which are related with math scaled scores in the 1st grade. g1classtype represents the class type of students in 1st grade. g1schid represents school’s id. g1tchid represents teacher’s id. g1tmathss represents math scaled scores of students in 1st grade. Figure1 shows the basic information of four variables.
+The dataset we investigate has 11601 rows and 379 cloumns, and we choose four variables: `g1classtype`, `g1schid`, `g1tchid`, `g1tmathss` which are related with math scaled scores in the 1st grade. `g1classtype` represents the class type of students in 1st grade. `g1schid` represents school ID. `g1tchid` represents teacher ID. `g1tmathss` represents math scaled scores of students in 1st grade. Figure1 shows the basic information of four variables.
 
 ```{r}
 library(tidyverse)
@@ -269,7 +248,10 @@ grid.arrange(classbox, schoolbox, ncol = 2)
 
 ## Two-way ANOVA Model
 
-**Table . ANOVA Table**
+Table 2 shows a summary of our anova model. The mean of square among class types is 5809 while that among school is 1824. As is known that the larger the mean of square is, the larger the variability among the group is. Therefore, the variability of mean math score in different class types is much larger than that in different school. In addition, the mean of square of residuals is 277, which is much smaller compared with class types and school. And the p-values of the two variables are much smaller than 0.001, which are highly significant in statistics.
+
+
+**Table 2. ANOVA Table**
 
 |Source of Variation | Degree of Freedom | Sum Square | Mean Square | F value | P value |
 |-------|-------|------|-----|--------|----------|
@@ -284,49 +266,57 @@ grid.arrange(classbox, schoolbox, ncol = 2)
 
 In this experiment, researchers assigned students to small classes, regular classed and regular classes with aide randomly. Besides, teachers are also randomly assigned to classed in each school. By adding the randomized block design of schools in the experiment, there are adepuate reasons to believe that the outcomes do not denpend on each other. In other words, the model satisfies the independence assumption.
 
-From the Residuals vs Fitted Values scatterpoint, these points are uniformly distributed on both sides of x-axis, which means that our model does not violate the equal variance assumption.
-
+From the Residuals vs Fitted Values scatterpoint (Figure 6), these points are uniformly distributed on both sides of x-axis, which means that our model does not violate the equal variance assumption. The Normal Q-Q plot (Figure 7) illustrates that the residuals are slightly heavy-tailed, but given the large sample size, we can verify that our model meet the normality assumption with central limit theorem.
 ```{r}
 library(stats);library(car);
 #check the mean zero and equal variance
 anova.fit<-aov(mean ~ g1classtype + g1schid,data = data_by_teacher)
-plot(anova.fit, which = c(1,3))
-summary(anova.fit)
-
-
-
-leveneTest(mean ~ g1classtype*g1schid,data = data_by_teacher)
+par(mfrow=c(1,2))
+plot(anova.fit, which = 1, main = "Figure 6: Residuals vs Fitted Values plot")#figure 6
+plot(anova.fit, which = 2, main = "Figure 7: Normal Q-Q plot")#figure 6
+par(mfrow=c(1,1))
 ```
 
-The Normal Q-Q plot illustrates that the residuals are heavy tailed compared with the normal distribution. In order to check the normality assumption more precisely, we conduct the Shapiro-Wilk Normality Test, whose null hypothesis is $H_0:$the popluation is normally distributed. The result shows that $W=0.9802$ and the $p-value$ is 0.0001, which is much smaller than the significant level 0.01. Therefore, we are 99% confident to reject the null hypothesis $H_0:$the residuals is normally distributed and our model does not follow the normality assumption.
+## Hypothesis Testing
+
+For F-test part, to test null hypothesis $H_0:\mu_1=\mu_2=\mu_3$ against alternative hypothesis: not all $H_a:\mu_{i}$'s are equal. We compute F-statistic: $F^*=\frac{MSTR}{MSE}=20.991$ and $F(0.95,2,6597)=2.997093$. Since $F^*>F(0.95,2,6597)$, We can reject the null hypothesis at the significance level 0.05. We can claim that there exists a treatment effect based on class types.
+
+For Tukey’s Procedure part, we use Tukey’s Procedure to test difference between each groups on class types. From the figure1, we can get the confidence intervals for all three pairs of class types. 
+
+As we can see, 0 is in the 95% family-wise confidence interval of the difference between regular aide class and regular class. It means that the difference between these two groups is really small and it is close to 0. From the table 1, we can find that regular class and small class have the largest difference. Teachers who are teaching in small class have 13.58 scores higher than regular class on the average. And regular aide class and regular class have the smallest difference.  
 
 ```{r}
-#normality assumption
-plot(anova.fit, which = 2)
-
-shapiro.test(anova.fit$residuals)
+alpha=0.05;
+T.ci=TukeyHSD(anova.fit,conf.level = 1-alpha)
+par(mfrow=c(1,1))
+plot(T.ci, las=1 , col="brown") #to huige：cannot remove 2nd plot
+T.ci$g1classtype
 ```
-
-
-The model diagnostic part will confirm whether the model asssumptions of the two-way ANOVA model so that it is appropriate for the problem setting. For the residuals, we will use the residuals vs fitted values plot to check equal variance assumption. Then, Q-Q plot is drawn to see whether the residuals are normally distributed roughly. To be more precise, the Shapiro-Wilk Normality Test is conducted.
 
 
 ## Causal Analysis
-
-From [Diane Whitmore Schanzenbach Brookings Papers on Education Policy No. 9 (2006/2007), pp. 205-228] we can know, project STAR is a randomized experiment since it ramdomly assigns students to different class types and teachers are also randomly assigned to class types. Therefore, we can make some causal inference if it follows two assumptions:
+In this part, we use average treatment effect to measure the causal effect. We can make causal statements if it follows two assumptions: 
 
 ***Stable unit treatment value assumption***: The potential outcomes for any unit do not vary with the treatments assigned to other units, and, for each unit, there are no different forms or versions of each treatments level, which lead to different potential outcomes.
 
 ***Ignorability***: Treatment assignment is independent of the outcomes.
 
-For the first assumption, it means that we could exclude the probability that a teacher was assigned or not assgned to small class does not effect the mean of math grade in other class types. Also, same version of treatment need to be ensured, that means teachers in the class of the one specific type give consistent education of that class type. Both of two points are hold based on the setting of the experiment. For the second assumptions, because of randomized experiment, other factors don't effect our treatments and we don't have the selection bias, the average difference in outcomes between the three groups can only be attributable to treatment.
 
-After verifying two assumptions, we use avarage treatment effect to measure the causal effect. Since there are three class types, we do pairwise comparisons to investigate it. We compare factor level means between each pair. From the above discussion, we can make a conclusion that, small class can cause higher mean scores by different teachers. 
+For the first assumption, it means that we could exclude the probability that a teacher was assigned or not assigned to small class does not affect the mean of math grade in other class types. Also, same version of treatment need to be ensured, that means teachers in the class of the one specific type give consistent education of that class type. From the background of project STAR, we know that it is randomized experiment since it randomly assigns students to different class types and teachers are also randomly assigned to class types. Therefore, both of two points are hold based on the setting of the experiment. However, for the second assumptions, treatment assignment is not independent of the outcomes. Since project STAR is a randomized block design but not a completely randomized design. Students and teachers are only randomized in each block and are not randomly assigned to schools. Therefore, treatment assignment and the outcomes are not independent. We can't make any causal statements due to violating Ignorability assumption. 
+
+
+# Difference between two projects
+
+In project 1, we assume the experiment to be completely randomized design. That is, only class type itself effects the math scores in 1st grade. Other factors like gender, lunch are randomized in this experiment don't affect treatment. And then we use one-way ANOVA model to investigate it. In project 2, we regard this experiment as randomized block design and use school as block, which is closer to the real world. We take account of schools' effects and build a two-way ANOVA model to investigate the class types' effects on math scores.
+
+In terms of the results, in project 1, we obtain that all of pairwise comparisons of math scores in three class types are statistically significant difference. In project 2, we can't make a claim that there is a statistically significant difference between the math scores in regular class and regular with aid class. This difference may be caused by different statistics served as the value of outcome in experiment's setting. More important, in project 2, blocking strategy can mitigate the effects of systematic error. From the data exploration, different schools also affect math scores due to educational resources differences. Within blocks, it is possible to assess the effect of different levels of the class types without having to worry about variations due to different schools. 
+
+Moreover, for causal inference, we make some causal statements in project 1, but us fails to make any causal statements in project 2. Because when using average treatment effect to measure the causal effect, Ignorability assumption are only satisfied in completely randomized experiment. In randomized block design, treatment assignment is no longer independent of the outcomes.
 
 
 # Discussion
 
-<span style="color:red">Note: </span> Discuss the limitations of the presented projects, and comment on how this project enlightens future research or analysis.
+
 
 # Appendix I. Reference
 
@@ -336,4 +326,3 @@ After verifying two assumptions, we use avarage treatment effect to measure the 
 ```{r}
 print(sessionInfo(), local = FALSE)
 ```
-
