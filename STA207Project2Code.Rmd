@@ -14,33 +14,156 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(stats)
 library(car)
+library(ggplot2)
+library(kableExtra)
+library(gridExtra)
+library(ggpubr)
 ```
 
 1.  Explore math scaled scores in the 1st with teachers as the unit. Generate summary statistics (in forms of tables or plots) that you find informative, and explain them. 
 
 ```{r}
 # https://dataverse.harvard.edu/file.xhtml?fileId=666716&version=1.0
-load("~/myrepo/STA207Project2/STAR_Students.RData")
+load("./STAR_Students.RData")
 data <- data.frame(g1classtype = x$g1classtype, g1schid = x$g1schid, 
                    g1tchid = x$g1tchid, g1tmathss = x$g1tmathss)
 ```
 
-Use no.omit() to remove all NA in dataset
-
 ```{r}
-data <- na.omit(data)
+# Table code
+varsum <- data.frame(Name= c("g1classtype", "g1schid", "g1tchid", "g1tmathss"),
+                     Type= c("qualitative variable", "qualitative variable", "qualitative variable", "quantitive variable"), 
+                     "The number of levels"= c(3,76,339,NA))
+kable(varsum,caption = "Table 1: basic information of variables") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F )
 ```
 
-Test the type of each varaible.
+In Figure 1, the above plot shows the percentage of missing value of four variables are nearly same, and the plot below shows that the location of missing values for three qualitative variables are consistent. It can be explained that because of low grades in kindergarten in STAR project, students quit STAR project and go to another school, or they join STAR project after 1st grade. Because we don't know how to tackle missing values, considering that we have enough data and believe that it won't have the significant impact on the results, we drop them directly.
 
 ```{r}
-sapply(data, class)
-#We should change ID variables as factor.
+#Code for the first plot
+missing.values <- data %>%
+  gather(key = "key", value = "val") %>%
+  mutate(isna = is.na(val)) %>%
+  group_by(key) %>%
+  mutate(total = n()) %>%
+  group_by(key, total, isna) %>%
+  summarise(num.isna = n()) %>%
+  mutate(pct = num.isna / total * 100)
+
+levels <-
+    (missing.values  %>% filter(isna == T) %>% arrange(desc(pct)))$key
+
+percentage.plot <- missing.values %>%
+      ggplot() +
+        geom_bar(aes(x = reorder(key, desc(pct)), 
+                     y = pct, fill=isna), 
+                 stat = 'identity', alpha=0.8) +
+      scale_x_discrete(limits = levels) +
+      scale_fill_manual(name = "", 
+                        values = c('steelblue', 'tomato3'), labels = c("Present", "Missing")) +
+      coord_flip() +
+      labs(title = "Figure 1: Percentage of missing values", x =
+             'Variable', y = "% of missing values")
+
+#Code for the second plot
+row.plot <- data %>%
+  mutate(id = row_number()) %>%
+  gather(-id, key = "key", value = "val") %>%
+  mutate(isna = is.na(val)) %>%
+  ggplot(aes(key, id, fill = isna)) +
+    geom_raster(alpha=0.8) +
+    scale_fill_manual(name = "",
+        values = c('steelblue', 'tomato3'),
+        labels = c("Present", "Missing")) +
+    scale_x_discrete(limits = levels) +
+    labs(x = "Variable",
+           y = "Row Number", title = "Missing values in rows") +
+    coord_flip()
+
+
+#arrange them
+grid.arrange(percentage.plot, row.plot, nrow = 2)
+```
+
+```{r}
+#remove NA
+data <- na.omit(data)
 data$g1schid <- factor(data$g1schid)
 data$g1tchid <- factor(data$g1tchid)
-nlevels(data$g1schid) #there are 76 school IDs
-nlevels(data$g1tchid) #there are 339 teacher IDs
 ```
+
+
+In this project, we are interested in math scaled scores in the 1st grade with teachers as the unit. After verifying each teacher are only employed in specific school and teach one specific class type, we select the mean of math scaled scores of one particular class to judge teachers. Therefore, we have a new dataset which has 339 rows and four columns including g1classtype, g1schid, g1tchid and mean. Figure 2 shows the distribution of the mean of math score by different teacher. It is bell-shaped and roughly closed to normal distribution.
+
+```{r}
+data_by_teacher <- data %>%
+  group_by(g1classtype,g1schid,g1tchid) %>%
+  summarize(mean = mean(g1tmathss))
+
+ggplot(data_by_teacher, aes(x=mean)) + 
+  geom_histogram() +
+  ggtitle("Figure 2: the mean of math score by different teacher")
+
+```
+
+Figure 3 shows the frequency number of class type and school id. Due to too many levels in g1schid, x axis labels in the plot of g1schid is omitted for readability. We can find that  g1classtype data is roughly balanced, and there is one specific school whose frequency number which is much higher than rest of schools. Figure 4 shows that the frequency number of class of different types in each school. Excepts a few extremely cases, data is more balanced than data group by class type. 
+
+```{r}
+# Figure 3
+classbar <- ggplot(data_by_teacher, aes(g1classtype)) +
+  geom_bar(fill = "#0073C2FF") +
+  theme_pubclean() +
+  ggtitle("Figure 3: The frequency bar plots of class type and school id")
+
+
+schoolbar <- ggplot(data_by_teacher, aes(x=reorder(g1schid, -table(g1schid)[g1schid]))) +
+  geom_bar(fill = "#0073C2FF") +
+  theme_pubclean() +
+  theme(
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  labs(x = "g1schid")
+
+
+grid.arrange(classbar, schoolbar, nrow = 2) 
+```
+
+```{r}
+# Figure 4 Bar plots of contingency tables
+ggplot(data_by_teacher %>%
+  group_by(g1classtype, g1schid) %>%
+  count(), aes(x = g1schid, y = n))+
+  geom_bar(
+    aes(fill = g1classtype), stat = "identity", color = "white",
+    position = position_dodge(0.9)) +
+  theme(
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  labs(x = "g1schid") +
+  ggtitle("Figure 4: The frequency bar plots of grouped contingency tables")
+
+```
+
+In Figure 5, it can be seen that different class types have effects on mean scores of math. Therein, teachers in small class have the higher mean scores of math and teachers in regular class have the lower mean scores of math in general. Also, different schools have impacts on mean scores of math. Aming to investigate the class types effect on mean scores of math, it is a good strategy that using schools to creat blocks for eliminating effects between different schools. 
+
+```{r}
+
+classbox <- ggplot(data_by_teacher, aes(x=g1classtype, y=mean)) + 
+    geom_boxplot(fill="slateblue", alpha=0.2) +
+    labs(title = "Figure 5: The distribution of mean scores of math by class type and school id")
+
+
+schoolbox <- ggplot(data_by_teacher, aes(x=g1schid, y=mean)) + 
+    geom_boxplot(fill="slateblue", alpha=0.2) +
+    theme(
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  labs(x = "g1schid") 
+
+grid.arrange(classbox, schoolbox, ncol = 2) 
+```
+
 
 We can check each teacher ID was in only one certain type of class and in only one school ID, so we can summarize the sore by different teacher ID.
 
@@ -68,37 +191,6 @@ par(mfrow=c(1,1))
 From the histogram on the mean of math score by different teacher is normal-like. However, the histogram on standard deviation of math score by different teacher is thiner than normal distribution.
 
 
-
-2.  Write down a two-way ANOVA model to study the effects of class types on math scaled scores in 1st grade, with the school indicator as the other factor. Explain your notation.
-
-$$Y_{ijk} = \mu_{ij} + \epsilon_{ijk} \text{ with } \epsilon_{ijk} \overset{\mathrm{i.i.d.}}{\sim} \mathcal{N}(0, \sigma^2),$$
-
-where 
-$\mu_{ij} = \mu + \alpha_i + \beta_j + \gamma_{ij}$.
-
-By notation, 
-
-$i$ represents the treatment of class type, and  $i = 1, 2, 3$ means the type of class is `small`, `regular` and `regular with aide`.
-
-$j$ represents the treatment of school ID, and $j = 1, \cdots, 76$. 
-
-$k$ represents different cases by teacher ID, and $k = 1, \cdots, 339$.
-
-$Y_{ijk}$ refers to summary information about math score for $k$-th teacher ID in  $i$-th type of class and $j$-th school ID.
-
-$\mu$ is the grand mean, $\alpha_i$ is the additive main effect of level $i$ from the first factor, $\beta_j$ is the additive main effect of level $j$ from the second factor and $\gamma_{ij}$ is the non-additive interaction effect of treatment $(i,j)$ from both factors.
-
-To ensure identifiability of parameters, we can add the following "sum-to-zero" constraints:
-
-$$\sum_i \alpha_i = \sum_j \beta_j = \sum_i \gamma_{ij} =\sum_j \gamma_{ij}= 0$$
-
-Assumptions:
-
-a. the data points are relevant with respect to the scientific question under investigation;
-b. the mean of the response variable is influenced additively (if not interaction term) and linearly by the factors;
-c. the errors are independent;
-d. the errors have the same variance;
-e. the errors are normally distributed.
 
 3.  Explain why your model is appropriate for this task on this data set. You may want to include statistics and plots in your explanation. 
 
@@ -141,6 +233,7 @@ Besides, these points are uniformly distributed on both sides of x-axis, which m
 anova.fit<-aov(mean~g1classtype+g1schid,data=data_by_teacher)
 #check the mean zero and equal variance
 plot(anova.fit, which = 1)
+plot(anova.fit, which = 2)
 summary(anova.fit)
 ```
 
@@ -173,8 +266,5 @@ We can use the Tukey-Kramer method for this task.
 alpha=0.05;
 T.ci=TukeyHSD(anova.fit,conf.level = 1-alpha)
 plot(T.ci, las=1 , col="brown")
+T.ci$g1classtype
 ```
-
-7.  Discuss whether you are able to make any causal statements based on your analysis. 
-
-8.  Is there any difference between the results from Project 2 compared to the results from Project 1?
